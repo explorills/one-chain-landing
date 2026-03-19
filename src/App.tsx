@@ -301,10 +301,10 @@ function NetworkSection() {
             className="inline-block text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.2em] sm:tracking-[0.25em] text-primary mb-2 sm:mb-3"
             style={{ fontFamily: "'JetBrains Mono', monospace" }}
           >
-            Network Statistics
+            Development Stats Preview
           </motion.span>
           <motion.h2 variants={fadeUp} className="text-xl sm:text-2xl md:text-4xl font-bold tracking-tight">
-            Real-Time Network
+            Virtual Nodes Simulation
           </motion.h2>
         </motion.div>
 
