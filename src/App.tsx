@@ -79,24 +79,26 @@ function Header() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
           <div className="flex items-center justify-between py-2.5 sm:py-3 md:py-4 gap-2 sm:gap-4">
             {/* Logo + title — ecosystem standard */}
-            <a href="/" className="flex items-center gap-2 sm:gap-[11px] shrink-0">
-              <img
-                src="/logo.png"
-                alt="ONE Chain"
-                className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[58px] md:h-[58px] object-contain"
-                width="58"
-                height="58"
-                loading="eager"
-              />
-              <div className="flex flex-col gap-1 sm:gap-1.5">
-                <p className="text-lg sm:text-[22px] md:text-[26px] font-bold tracking-tight leading-none">
-                  ONE <span className="text-primary">chain</span>
-                </p>
-                <div className="hidden min-[360px]:block">
-                  <PoweredByExplNodes size="sm" />
+            <div className="flex items-center gap-2 sm:gap-[11px] shrink-0">
+              <a href="/" className="flex items-center gap-2 sm:gap-[11px]">
+                <img
+                  src="/logo.png"
+                  alt="ONE Chain"
+                  className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[58px] md:h-[58px] object-contain"
+                  width="58"
+                  height="58"
+                  loading="eager"
+                />
+                <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <p className="text-lg sm:text-[22px] md:text-[26px] font-bold tracking-tight leading-none">
+                    ONE <span className="text-primary">chain</span>
+                  </p>
                 </div>
+              </a>
+              <div className="hidden min-[360px]:block">
+                <PoweredByExplNodes size="sm" />
               </div>
-            </a>
+            </div>
 
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
