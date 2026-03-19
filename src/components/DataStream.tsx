@@ -34,7 +34,7 @@ export function DataStream({ count = 20 }: { count?: number }) {
             left: `${line.x}%`,
             width: '1px',
             height: `${line.height}px`,
-            background: `linear-gradient(to top, transparent, oklch(0.65 0.12 220 / ${line.opacity}), transparent)`,
+            background: `linear-gradient(to top, transparent, oklch(0.55 0.23 264 / ${line.opacity}), transparent)`,
             animation: `data-flow ${line.duration}s ${line.delay}s ease-in-out infinite`,
           }}
         />
@@ -76,7 +76,7 @@ export function DataStreamHorizontal() {
             top: `${p.y}px`,
             width: `${p.size}px`,
             height: `${p.size}px`,
-            background: 'oklch(0.70 0.12 220)',
+            background: 'oklch(0.62 0.18 250)',
             left: '-5%',
             animation: `shimmer ${p.duration}s ${p.delay}s linear infinite`,
             opacity: 0.6,

@@ -49,7 +49,7 @@ const STYLES = {
   textColor: '#ffffff', // text-white
   backgroundColor: 'oklch(0.18 0.04 252)', // bg-card
   backgroundColorHover: 'oklch(0.18 0.04 252 / 0.8)', // bg-card/80
-  borderColor: 'oklch(0.6271 0.1699 149.21)', // border-primary
+  borderColor: 'oklch(0.55 0.23 264)', // border-primary — ONE Network blue
   
   // Size variants - EXACT from Tailwind classes
   sizes: {
@@ -78,7 +78,7 @@ const STYLES = {
     // shadow-[0_2px_4px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)]
     default: '0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
     // hover:shadow-[0_4px_8px_rgba(0,0,0,0.4),0_0_12px_hsl(var(--primary)/0.6),inset_0_1px_0_rgba(255,255,255,0.15)]
-    hover: '0 4px 8px rgba(0,0,0,0.4), 0 0 12px oklch(0.6271 0.1699 149.21 / 0.6), inset 0 1px 0 rgba(255,255,255,0.15)',
+    hover: '0 4px 8px rgba(0,0,0,0.4), 0 0 12px oklch(0.55 0.23 264 / 0.6), inset 0 1px 0 rgba(255,255,255,0.15)',
   },
 } as const
 
