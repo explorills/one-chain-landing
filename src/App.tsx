@@ -321,7 +321,7 @@ function NetworkSection() {
             Development Stats Preview
           </motion.span>
           <motion.h2 variants={fadeUp} className="text-xl sm:text-2xl md:text-4xl font-bold tracking-tight">
-            Virtual Nodes Simulation
+            Virtual EXPL Nodes Simulation
           </motion.h2>
         </motion.div>
 
