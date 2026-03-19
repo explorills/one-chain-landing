@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import createGlobe from 'cobe'
 
 // Node locations — real cities representing ONE ecosystem global distribution
@@ -25,13 +25,19 @@ const NODE_MARKERS: [number, number][] = [
 
 export function Globe() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const pointerInteracting = useRef<number | null>(null)
-  const pointerInteractionMovement = useRef(0)
-  const [focusPoint, setFocusPoint] = useState<[number, number]>([0.3, 0.1])
+  const pointerDown = useRef(false)
+  const pointerX = useRef(0)
+  const pointerY = useRef(0)
+  const velocityX = useRef(0)
+  const velocityY = useRef(0)
+  const phiRef = useRef(0.3)
+  const thetaRef = useRef(0.15)
 
   useEffect(() => {
-    let phi = 0.3
     let width = 0
+    const FRICTION = 0.95
+    const SENSITIVITY = 0.005
+    const AUTO_SPIN = 0.002
 
     const onResize = () => {
       if (canvasRef.current) {
@@ -45,8 +51,8 @@ export function Globe() {
       devicePixelRatio: 2,
       width: width * 2,
       height: width * 2,
-      phi: 0.3,
-      theta: 0.15,
+      phi: phiRef.current,
+      theta: thetaRef.current,
       dark: 1,
       diffuse: 3,
       mapSamples: 36000,
@@ -59,18 +65,76 @@ export function Globe() {
         size: 0.04,
       })),
       onRender: (state) => {
-        if (!pointerInteracting.current) {
-          phi += 0.002
+        if (!pointerDown.current) {
+          // Apply momentum with friction
+          if (Math.abs(velocityX.current) > 0.0001 || Math.abs(velocityY.current) > 0.0001) {
+            phiRef.current += velocityX.current
+            thetaRef.current += velocityY.current
+            velocityX.current *= FRICTION
+            velocityY.current *= FRICTION
+          } else {
+            // Auto-spin when no momentum
+            phiRef.current += AUTO_SPIN
+          }
         }
-        state.phi = phi + pointerInteractionMovement.current
+
+        state.phi = phiRef.current
+        state.theta = thetaRef.current
         state.width = width * 2
         state.height = width * 2
       },
     })
 
+    const canvas = canvasRef.current!
+
+    const onPointerDown = (e: PointerEvent) => {
+      pointerDown.current = true
+      pointerX.current = e.clientX
+      pointerY.current = e.clientY
+      // Stop momentum on click
+      velocityX.current = 0
+      velocityY.current = 0
+      canvas.style.cursor = 'grabbing'
+      canvas.setPointerCapture(e.pointerId)
+    }
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!pointerDown.current) return
+      const dx = e.clientX - pointerX.current
+      const dy = e.clientY - pointerY.current
+      pointerX.current = e.clientX
+      pointerY.current = e.clientY
+
+      // Flip horizontal when globe is upside down so drag always matches visual direction
+      const flipH = Math.cos(thetaRef.current) >= 0 ? 1 : -1
+
+      velocityX.current = dx * SENSITIVITY * flipH
+      velocityY.current = dy * SENSITIVITY
+
+      // Apply immediately while dragging
+      phiRef.current += velocityX.current
+      thetaRef.current += velocityY.current
+    }
+
+    const onPointerUp = (e: PointerEvent) => {
+      pointerDown.current = false
+      canvas.style.cursor = 'grab'
+      canvas.releasePointerCapture(e.pointerId)
+      // Velocity is already set from last move — momentum continues via onRender
+    }
+
+    canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('pointermove', onPointerMove)
+    canvas.addEventListener('pointerup', onPointerUp)
+    canvas.addEventListener('pointerleave', onPointerUp)
+
     return () => {
       globe.destroy()
       window.removeEventListener('resize', onResize)
+      canvas.removeEventListener('pointerdown', onPointerDown)
+      canvas.removeEventListener('pointermove', onPointerMove)
+      canvas.removeEventListener('pointerup', onPointerUp)
+      canvas.removeEventListener('pointerleave', onPointerUp)
     }
   }, [])
 
@@ -93,31 +157,7 @@ export function Globe() {
       <canvas
         ref={canvasRef}
         className="w-full h-full"
-        style={{ contain: 'layout paint size', cursor: 'grab' }}
-        onPointerDown={(e) => {
-          pointerInteracting.current = e.clientX - pointerInteractionMovement.current
-          ;(e.target as HTMLCanvasElement).style.cursor = 'grabbing'
-        }}
-        onPointerUp={(e) => {
-          pointerInteracting.current = null
-          ;(e.target as HTMLCanvasElement).style.cursor = 'grab'
-        }}
-        onPointerOut={(e) => {
-          pointerInteracting.current = null
-          ;(e.target as HTMLCanvasElement).style.cursor = 'grab'
-        }}
-        onMouseMove={(e) => {
-          if (pointerInteracting.current !== null) {
-            const delta = e.clientX - pointerInteracting.current
-            pointerInteractionMovement.current = delta / 200
-          }
-        }}
-        onTouchMove={(e) => {
-          if (pointerInteracting.current !== null && e.touches[0]) {
-            const delta = e.touches[0].clientX - pointerInteracting.current
-            pointerInteractionMovement.current = delta / 100
-          }
-        }}
+        style={{ contain: 'layout paint size', cursor: 'grab', touchAction: 'none' }}
       />
     </div>
   )

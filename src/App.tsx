@@ -21,6 +21,7 @@ import { AnimatedCounter } from './components/AnimatedCounter'
 import { DataStream } from './components/DataStream'
 import { BlockTicker } from './components/BlockTicker'
 import { PoweredByExplNodes } from './components/PoweredByExplNodes'
+import { EcosystemDropdown } from './components/EcosystemDropdown'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -45,7 +46,13 @@ const socialLinks = [
   { name: 'GitHub', url: 'https://github.com/explorills', icon: '/github-mark-white.svg' },
 ]
 
-const navItems = ['Network', 'Architecture', 'Nodes', 'Consensus', 'Roadmap']
+const navItems = [
+  { label: 'Network', id: 'network' },
+  { label: 'Architecture', id: 'architecture' },
+  { label: 'EXPL Nodes', id: 'nodes' },
+  { label: 'Consensus', id: 'consensus' },
+  { label: 'Roadmap', id: 'roadmap' },
+]
 
 function Header() {
   const [scrolled, setScrolled] = useState(false)
@@ -91,28 +98,32 @@ function Header() {
             <nav className="hidden md:flex items-center gap-6">
               {navItems.map((item) => (
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
+                  key={item.id}
+                  href={`#${item.id}`}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
+              <EcosystemDropdown />
             </nav>
 
-            {/* Mobile hamburger */}
-            <button
-              className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {mobileMenuOpen ? (
-                  <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                ) : (
-                  <><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></>
-                )}
-              </svg>
-            </button>
+            <div className="flex items-center gap-2 md:hidden">
+              <EcosystemDropdown />
+              {/* Mobile hamburger */}
+              <button
+                className="p-2 text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {mobileMenuOpen ? (
+                    <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+                  ) : (
+                    <><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></>
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -128,12 +139,12 @@ function Header() {
           <div className="flex flex-col py-4 px-4 gap-4">
             {navItems.map((item) => (
               <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
+                key={item.id}
+                href={`#${item.id}`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
-                {item}
+                {item.label}
               </a>
             ))}
           </div>
@@ -189,7 +200,7 @@ function HeroSection() {
 
             <motion.p variants={fadeUp} className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md">
               EVM-compatible blockchain purpose-built for the EXPL.ONE ecosystem.
-              Gas-free transactions. Sovereign infrastructure. Community-powered nodes.
+              Gas-free transactions. Sovereign infrastructure. Community-powered EXPL Nodes.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-wrap gap-2.5 pt-1">
@@ -240,7 +251,7 @@ function HeroSection() {
 function NetworkSection() {
   const stats = [
     { label: 'Block Height', value: 2847391, icon: Cube, prefix: '#' },
-    { label: 'Active Nodes', value: 142, icon: HardDrives },
+    { label: 'Active EXPL Nodes', value: 142, icon: HardDrives },
     { label: 'Transactions', value: 8439021, icon: Lightning },
     { label: 'Avg Block Time', value: 3.0, decimals: 1, suffix: 's', icon: CirclesThree },
     { label: 'Network Uptime', value: 99.97, decimals: 2, suffix: '%', icon: ShieldCheck },
@@ -376,11 +387,11 @@ function ArchitectureSection() {
 
 function NodesSection() {
   const features = [
-    { icon: Lightning, title: 'Gas-Free Transactions', desc: 'Zero transaction fees. Node operators earn EXPL NET through daily distribution. Users transact freely.' },
+    { icon: Lightning, title: 'Gas-Free Transactions', desc: 'Zero transaction fees. EXPL Node operators earn EXPL NET through daily distribution. Users transact freely.' },
     { icon: Lock, title: 'Permissioned Deployment', desc: 'Contract deployment gated at EVM level. Only whitelisted addresses via ONE Ventures can deploy.' },
-    { icon: HardDrives, title: 'Full Node Infrastructure', desc: 'Every node is a full node providing hosting and computational power for the entire ecosystem.' },
-    { icon: TreeStructure, title: 'Decentralized Hosting', desc: 'Frontend, backend, and all services distributed across nodes. Zero cloud dependency.' },
-    { icon: Users, title: 'Stakeholder Incentives', desc: 'Run a node, become a stakeholder. Earn EXPL NET daily. Participate in governance.' },
+    { icon: HardDrives, title: 'Full EXPL Node Infrastructure', desc: 'Every EXPL Node is a full node providing hosting and computational power for the entire ecosystem.' },
+    { icon: TreeStructure, title: 'Decentralized Hosting', desc: 'Frontend, backend, and all services distributed across EXPL Nodes. Zero cloud dependency.' },
+    { icon: Users, title: 'Stakeholder Incentives', desc: 'Run an EXPL Node, become a stakeholder. Earn EXPL NET daily. Participate in governance.' },
     { icon: ShieldCheck, title: 'Sovereign Network', desc: 'No bridges, no external tokens. ONE Chain exists exclusively for the ONE ecosystem.' },
   ]
 
@@ -395,10 +406,10 @@ function NodesSection() {
           className="text-center mb-8 sm:mb-10"
         >
           <motion.span variants={fadeUp} className="inline-block text-[11px] font-medium uppercase tracking-[0.25em] text-primary mb-3" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-            Node Infrastructure
+            EXPL Node Infrastructure
           </motion.span>
           <motion.h2 variants={fadeUp} className="text-2xl sm:text-4xl font-bold tracking-tight">
-            Nodes Power Everything
+            EXPL Nodes Power Everything
           </motion.h2>
           <motion.p variants={fadeUp} className="text-sm text-muted-foreground mt-3 max-w-lg mx-auto">
             Dual purpose — processing transactions and providing decentralized infrastructure.
@@ -543,9 +554,9 @@ function ConsensusSection() {
 function RoadmapSection() {
   const phases = [
     { phase: 'Phase 1', title: 'Foundation', status: 'active' as const, items: ['Geth fork with ONE Chain config', 'PoA consensus — 3s block time', 'Gas-free transaction model', 'Permissioned contract deployment', 'Local testnet & tooling'] },
-    { phase: 'Phase 2', title: 'Token Economy', status: 'upcoming' as const, items: ['EXPL native currency integration', 'ERC-721/1155 ecosystem tokens', 'Multi-validator testnet', 'Block explorer & wallets', 'EXPL NET node incentives'] },
-    { phase: 'Phase 3', title: 'Decentralized Storage', status: 'upcoming' as const, items: ['Chunked data on full nodes', 'Frontend hosting on nodes', 'Asset CDN via node mesh', 'Content addressing'] },
-    { phase: 'Phase 4', title: 'Decentralized Compute', status: 'upcoming' as const, items: ['Backend services on nodes', 'Task scheduling & sandboxing', 'Full self-sovereignty', 'Zero cloud dependency'] },
+    { phase: 'Phase 2', title: 'Token Economy', status: 'upcoming' as const, items: ['EXPL native currency integration', 'ERC-721/1155 ecosystem tokens', 'Multi-validator testnet', 'Block explorer & wallets', 'EXPL Node operator incentives'] },
+    { phase: 'Phase 3', title: 'Decentralized Storage', status: 'upcoming' as const, items: ['Chunked data on EXPL Nodes', 'Frontend hosting on EXPL Nodes', 'Asset CDN via EXPL Node mesh', 'Content addressing'] },
+    { phase: 'Phase 4', title: 'Decentralized Compute', status: 'upcoming' as const, items: ['Backend services on EXPL Nodes', 'Task scheduling & sandboxing', 'Full self-sovereignty', 'Zero cloud dependency'] },
   ]
 
   return (
