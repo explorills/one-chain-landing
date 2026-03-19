@@ -20,7 +20,9 @@ export function AnimatedCounter({
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-50px' })
   const hasAnimated = useRef(false)
+  const currentTarget = useRef(target)
 
+  // Initial scroll-triggered animation
   useEffect(() => {
     if (!isInView || hasAnimated.current) return
     hasAnimated.current = true
@@ -29,13 +31,30 @@ export function AnimatedCounter({
     const step = (now: number) => {
       const elapsed = (now - start) / 1000
       const progress = Math.min(elapsed / duration, 1)
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(eased * target)
+      setCount(eased * currentTarget.current)
       if (progress < 1) requestAnimationFrame(step)
     }
     requestAnimationFrame(step)
-  }, [isInView, target, duration])
+  }, [isInView, duration])
+
+  // Live updates — smoothly animate to new target after initial animation
+  useEffect(() => {
+    if (!hasAnimated.current || target === currentTarget.current) return
+    const from = currentTarget.current
+    currentTarget.current = target
+
+    const start = performance.now()
+    const animDuration = 0.6 // faster for live updates
+    const step = (now: number) => {
+      const elapsed = (now - start) / 1000
+      const progress = Math.min(elapsed / animDuration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(from + (target - from) * eased)
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [target])
 
   const formatted = decimals > 0
     ? count.toFixed(decimals)
@@ -45,7 +64,7 @@ export function AnimatedCounter({
     <motion.span
       ref={ref}
       className="tabular-nums"
-      style={{ fontFamily: "'JetBrains Mono', monospace" }}
+      style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 'inherit' }}
     >
       {prefix}{formatted}{suffix}
     </motion.span>

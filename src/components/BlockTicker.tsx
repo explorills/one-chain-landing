@@ -1,49 +1,25 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-interface Block {
-  number: number
-  hash: string
-  txCount: number
-  timestamp: number
-}
-
-function randomHash(): string {
-  const chars = '0123456789abcdef'
-  let hash = '0x'
-  for (let i = 0; i < 8; i++) {
-    hash += chars[Math.floor(Math.random() * 16)]
-  }
-  return hash + '...'
-}
+import { fetchBlocks, type BlockData } from '@/lib/api'
 
 export function BlockTicker() {
-  const [blocks, setBlocks] = useState<Block[]>([])
-  const blockNum = useRef(2_847_391)
+  const [blocks, setBlocks] = useState<BlockData[]>([])
 
   useEffect(() => {
-    // Add initial block
-    const initial: Block = {
-      number: blockNum.current,
-      hash: randomHash(),
-      txCount: Math.floor(Math.random() * 12),
-      timestamp: Date.now(),
+    let mounted = true
+
+    async function poll() {
+      const data = await fetchBlocks()
+      if (mounted && data) setBlocks(data)
     }
-    setBlocks([initial])
 
-    // Simulate new blocks every 3 seconds (matching ONE Chain block time)
-    const interval = setInterval(() => {
-      blockNum.current += 1
-      const newBlock: Block = {
-        number: blockNum.current,
-        hash: randomHash(),
-        txCount: Math.floor(Math.random() * 15),
-        timestamp: Date.now(),
-      }
-      setBlocks((prev) => [newBlock, ...prev].slice(0, 5))
-    }, 3000)
+    poll()
+    const interval = setInterval(poll, 3000)
 
-    return () => clearInterval(interval)
+    return () => {
+      mounted = false
+      clearInterval(interval)
+    }
   }, [])
 
   return (

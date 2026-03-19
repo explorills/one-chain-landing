@@ -22,6 +22,8 @@ import { DataStream } from './components/DataStream'
 import { BlockTicker } from './components/BlockTicker'
 import { PoweredByExplNodes } from './components/PoweredByExplNodes'
 import { EcosystemDropdown } from './components/EcosystemDropdown'
+import { LiveIndicator } from './components/LiveIndicator'
+import { fetchStats, type NetworkStats } from './lib/api'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -277,13 +279,28 @@ function HeroSection() {
 }
 
 function NetworkSection() {
+  const [data, setData] = useState<NetworkStats | null>(null)
+
+  useEffect(() => {
+    let mounted = true
+
+    async function poll() {
+      const stats = await fetchStats()
+      if (mounted && stats) setData(stats)
+    }
+
+    poll()
+    const interval = setInterval(poll, 3000)
+    return () => { mounted = false; clearInterval(interval) }
+  }, [])
+
   const stats = [
-    { label: 'Block Height', value: 2847391, icon: Cube, prefix: '#' },
-    { label: 'Active EXPL Nodes', value: 142, icon: HardDrives },
-    { label: 'Transactions', value: 8439021, icon: Lightning },
-    { label: 'Avg Block Time', value: 3.0, decimals: 1, suffix: 's', icon: CirclesThree },
-    { label: 'Network Uptime', value: 99.97, decimals: 2, suffix: '%', icon: ShieldCheck },
-    { label: 'Unique Wallets', value: 24819, icon: Users },
+    { label: 'Block Height', value: data?.blockHeight ?? 0, icon: Cube, prefix: '#' },
+    { label: 'Active EXPL Nodes', value: data?.activeNodes ?? 0, icon: HardDrives },
+    { label: 'Transactions', value: data?.totalTransactions ?? 0, icon: Lightning },
+    { label: 'Avg Block Time', value: data?.avgBlockTime ?? 3.0, decimals: 1, suffix: 's', icon: CirclesThree },
+    { label: 'Network Uptime', value: data?.networkUptime ?? 99.97, decimals: 2, suffix: '%', icon: ShieldCheck },
+    { label: 'Unique Wallets', value: data?.uniqueWallets ?? 0, icon: Users },
   ]
 
   return (
@@ -294,7 +311,7 @@ function NetworkSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
-          className="text-center mb-6 sm:mb-8 md:mb-10"
+          className="text-center mb-4 sm:mb-6 md:mb-8"
         >
           <motion.span
             variants={fadeUp}
@@ -308,6 +325,17 @@ function NetworkSection() {
           </motion.h2>
         </motion.div>
 
+        {/* Live indicator bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease }}
+          className="mb-4 sm:mb-5 md:mb-6"
+        >
+          <LiveIndicator />
+        </motion.div>
+
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -319,12 +347,12 @@ function NetworkSection() {
             <motion.div
               key={stat.label}
               variants={scaleIn}
-              className="group relative p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl bg-card/40 border border-border/40 backdrop-blur-sm hover:border-primary/30 hover:bg-card/60 transition-all duration-300"
+              className="group relative p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl bg-card/40 border border-border/40 backdrop-blur-sm hover:border-primary/30 hover:bg-card/60 transition-all duration-300 overflow-hidden"
             >
               <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
                 <stat.icon weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary/40 group-hover:text-primary/60 transition-colors" />
               </div>
-              <div className="text-lg sm:text-xl md:text-3xl font-bold mb-0.5 sm:mb-1">
+              <div className="text-[15px] min-[360px]:text-base sm:text-xl md:text-3xl font-bold mb-0.5 sm:mb-1 truncate pr-6">
                 <AnimatedCounter target={stat.value} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
               </div>
               <div className="text-[10px] sm:text-xs md:text-sm text-muted-foreground leading-tight">{stat.label}</div>
