@@ -352,7 +352,7 @@ function NetworkSection() {
               <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
                 <stat.icon weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary/40 group-hover:text-primary/60 transition-colors" />
               </div>
-              <div className="text-[15px] min-[360px]:text-base sm:text-xl md:text-3xl font-bold mb-0.5 sm:mb-1 truncate pr-6">
+              <div className="text-[13px] min-[360px]:text-[15px] sm:text-xl md:text-3xl font-bold mb-0.5 sm:mb-1 pr-5 sm:pr-6">
                 <AnimatedCounter target={stat.value} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
               </div>
               <div className="text-[10px] sm:text-xs md:text-sm text-muted-foreground leading-tight">{stat.label}</div>

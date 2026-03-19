@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import createGlobe from 'cobe'
 
 // Node locations — real cities representing ONE ecosystem global distribution
@@ -32,8 +32,18 @@ export function Globe() {
   const velocityY = useRef(0)
   const phiRef = useRef(0.3)
   const thetaRef = useRef(0.15)
+  const [webglSupported, setWebglSupported] = useState(true)
 
   useEffect(() => {
+    if (!canvasRef.current) return
+
+    // Check WebGL support before initializing
+    const gl = canvasRef.current.getContext('webgl') || canvasRef.current.getContext('experimental-webgl')
+    if (!gl) {
+      setWebglSupported(false)
+      return
+    }
+
     let width = 0
     const FRICTION = 0.95
     const SENSITIVITY = 0.005
@@ -47,51 +57,54 @@ export function Globe() {
     window.addEventListener('resize', onResize)
     onResize()
 
-    const globe = createGlobe(canvasRef.current!, {
-      devicePixelRatio: 2,
-      width: width * 2,
-      height: width * 2,
-      phi: phiRef.current,
-      theta: thetaRef.current,
-      dark: 1,
-      diffuse: 3,
-      mapSamples: 36000,
-      mapBrightness: 2.5,
-      baseColor: [0.15, 0.2, 0.35],
-      markerColor: [0.4, 0.7, 1.0],
-      glowColor: [0.12, 0.18, 0.35],
-      markers: NODE_MARKERS.map(([lat, lng]) => ({
-        location: [lat, lng] as [number, number],
-        size: 0.04,
-      })),
-      onRender: (state) => {
-        if (!pointerDown.current) {
-          // Apply momentum with friction
-          if (Math.abs(velocityX.current) > 0.0001 || Math.abs(velocityY.current) > 0.0001) {
-            phiRef.current += velocityX.current
-            thetaRef.current += velocityY.current
-            velocityX.current *= FRICTION
-            velocityY.current *= FRICTION
-          } else {
-            // Auto-spin when no momentum
-            phiRef.current += AUTO_SPIN
+    let globe: ReturnType<typeof createGlobe>
+    try {
+      globe = createGlobe(canvasRef.current, {
+        devicePixelRatio: 2,
+        width: width * 2,
+        height: width * 2,
+        phi: phiRef.current,
+        theta: thetaRef.current,
+        dark: 1,
+        diffuse: 3,
+        mapSamples: 36000,
+        mapBrightness: 2.5,
+        baseColor: [0.15, 0.2, 0.35],
+        markerColor: [0.4, 0.7, 1.0],
+        glowColor: [0.12, 0.18, 0.35],
+        markers: NODE_MARKERS.map(([lat, lng]) => ({
+          location: [lat, lng] as [number, number],
+          size: 0.04,
+        })),
+        onRender: (state) => {
+          if (!pointerDown.current) {
+            if (Math.abs(velocityX.current) > 0.0001 || Math.abs(velocityY.current) > 0.0001) {
+              phiRef.current += velocityX.current
+              thetaRef.current += velocityY.current
+              velocityX.current *= FRICTION
+              velocityY.current *= FRICTION
+            } else {
+              phiRef.current += AUTO_SPIN
+            }
           }
-        }
 
-        state.phi = phiRef.current
-        state.theta = thetaRef.current
-        state.width = width * 2
-        state.height = width * 2
-      },
-    })
+          state.phi = phiRef.current
+          state.theta = thetaRef.current
+          state.width = width * 2
+          state.height = width * 2
+        },
+      })
+    } catch {
+      setWebglSupported(false)
+      return
+    }
 
-    const canvas = canvasRef.current!
+    const canvas = canvasRef.current
 
     const onPointerDown = (e: PointerEvent) => {
       pointerDown.current = true
       pointerX.current = e.clientX
       pointerY.current = e.clientY
-      // Stop momentum on click
       velocityX.current = 0
       velocityY.current = 0
       canvas.style.cursor = 'grabbing'
@@ -105,13 +118,11 @@ export function Globe() {
       pointerX.current = e.clientX
       pointerY.current = e.clientY
 
-      // Flip horizontal when globe is upside down so drag always matches visual direction
       const flipH = Math.cos(thetaRef.current) >= 0 ? 1 : -1
 
       velocityX.current = dx * SENSITIVITY * flipH
       velocityY.current = dy * SENSITIVITY
 
-      // Apply immediately while dragging
       phiRef.current += velocityX.current
       thetaRef.current += velocityY.current
     }
@@ -120,7 +131,6 @@ export function Globe() {
       pointerDown.current = false
       canvas.style.cursor = 'grab'
       canvas.releasePointerCapture(e.pointerId)
-      // Velocity is already set from last move — momentum continues via onRender
     }
 
     canvas.addEventListener('pointerdown', onPointerDown)
@@ -137,6 +147,8 @@ export function Globe() {
       canvas.removeEventListener('pointerleave', onPointerUp)
     }
   }, [])
+
+  if (!webglSupported) return null
 
   return (
     <div className="relative w-full aspect-square max-w-[600px] mx-auto">
