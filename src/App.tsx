@@ -360,7 +360,7 @@ function NodesSection() {
             EXPL Nodes Power Everything
           </motion.h2>
           <motion.p variants={fadeUp} className="text-[13px] sm:text-sm text-muted-foreground mt-2 sm:mt-3 max-w-lg mx-auto">
-            Dual purpose — processing transactions and providing decentralized infrastructure.
+            Dual purpose: processing transactions while providing decentralized infrastructure
           </motion.p>
         </motion.div>
 
