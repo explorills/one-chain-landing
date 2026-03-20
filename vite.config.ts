@@ -9,5 +9,6 @@ export default defineConfig({
     alias: {
       '@': resolve(import.meta.dirname, 'src'),
     },
+    dedupe: ['react', 'react-dom', 'wagmi', 'viem', '@tanstack/react-query'],
   },
 })

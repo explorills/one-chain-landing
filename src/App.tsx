@@ -16,14 +16,13 @@ import {
   TreeStructure,
   Lock,
 } from '@phosphor-icons/react'
+import { EcosystemNavbar, EcosystemFooter, OneIdProvider } from '@explorills/one-ecosystem-ui'
 import { Globe } from './components/Globe'
 import { AnimatedCounter } from './components/AnimatedCounter'
 import { DataStream } from './components/DataStream'
 import { BlockTicker } from './components/BlockTicker'
-import { PoweredByExplNodes } from './components/PoweredByExplNodes'
-import { EcosystemDropdown } from './components/EcosystemDropdown'
 import { LiveIndicator } from './components/LiveIndicator'
-import { fetchStats, type NetworkStats } from './lib/api'
+import { fetchStats, getOneIdApiUrl, type NetworkStats } from './lib/api'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -42,140 +41,13 @@ const scaleIn = {
   show: { opacity: 1, scale: 1, transition: { duration: 0.5, ease } },
 }
 
-const socialLinks = [
-  { name: 'Discord', url: 'https://discord.com/invite/RetTCVq7tJ', icon: '/Discord-Symbol-White.svg' },
-  { name: 'Twitter', url: 'https://x.com/explorills_main', icon: 'https://cdn.simpleicons.org/x/ffffff' },
-  { name: 'GitHub', url: 'https://github.com/explorills', icon: '/github-mark-white.svg' },
+const navigationLinks = [
+  { label: 'Network', href: '#network' },
+  { label: 'Architecture', href: '#architecture' },
+  { label: 'EXPL Nodes', href: '#nodes' },
+  { label: 'Consensus', href: '#consensus' },
+  { label: 'Roadmap', href: '#roadmap' },
 ]
-
-const navItems = [
-  { label: 'Network', id: 'network' },
-  { label: 'Architecture', id: 'architecture' },
-  { label: 'EXPL Nodes', id: 'nodes' },
-  { label: 'Consensus', id: 'consensus' },
-  { label: 'Roadmap', id: 'roadmap' },
-]
-
-function Header() {
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  return (
-    <>
-      <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-          scrolled ? 'backdrop-blur-lg bg-[#1c1c1d]/40' : 'bg-[#1c1c1d]/50'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
-          <div className="flex items-center justify-between py-2.5 sm:py-3 md:py-4 gap-2 sm:gap-4">
-            {/* Logo + title — ecosystem standard */}
-            <div className="flex items-center gap-2 sm:gap-[11px] shrink-0">
-              <a href="/" className="flex items-center gap-2 sm:gap-[11px]">
-                <img
-                  src="/logo.png"
-                  alt="ONE Chain"
-                  className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[58px] md:h-[58px] object-contain"
-                  width="58"
-                  height="58"
-                  loading="eager"
-                />
-                <div className="flex flex-col gap-1 sm:gap-1.5">
-                  <p className="text-lg sm:text-[22px] md:text-[26px] font-bold tracking-tight leading-none">
-                    ONE <span className="text-primary">chain</span>
-                  </p>
-                </div>
-              </a>
-              <div className="hidden min-[360px]:block">
-                <PoweredByExplNodes size="sm" />
-              </div>
-            </div>
-
-            {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
-              {navItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
-              <a
-                href="https://network.expl.one"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-              >
-                Network Dashboard
-              </a>
-              <EcosystemDropdown />
-            </nav>
-
-            <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden">
-              <EcosystemDropdown />
-              {/* Mobile hamburger */}
-              <button
-                className="p-1.5 sm:p-2 text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {mobileMenuOpen ? (
-                    <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                  ) : (
-                    <><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></>
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Mobile menu dropdown */}
-      {mobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.15 }}
-          className="fixed top-[60px] sm:top-[68px] left-0 right-0 z-40 bg-[#1c1c1d]/95 backdrop-blur-md border-t border-border/30 lg:hidden"
-        >
-          <div className="flex flex-col py-3 sm:py-4 px-3 sm:px-4 gap-3 sm:gap-4">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-              >
-                {item.label}
-              </a>
-            ))}
-            <a
-              href="https://network.expl.one"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-            >
-              Network Dashboard
-            </a>
-          </div>
-        </motion.div>
-      )}
-    </>
-  )
-}
 
 function HeroSection() {
   return (
@@ -702,69 +574,17 @@ function RoadmapSection() {
   )
 }
 
-function Footer() {
-  const [showScrollTop, setShowScrollTop] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 500)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  return (
-    <>
-      <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/30 bg-background/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
-          <div className="py-2.5 sm:py-3">
-            <div className="flex items-center justify-between gap-3 sm:gap-4">
-              <div className="text-[10px] sm:text-xs whitespace-nowrap min-w-0">
-                <a href="https://expl.one" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">EXPL.ONE</a>
-                <span className="text-muted-foreground"> &copy; {new Date().getFullYear()}</span>
-                <span className="text-muted-foreground hidden min-[400px]:inline"> All rights reserved</span>
-              </div>
-
-              <div className="flex items-center gap-3 sm:gap-4">
-                {socialLinks.map((social) => (
-                  <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="relative group">
-                    <div className="absolute inset-0 rounded-full bg-primary/50 blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
-                    <div className="relative w-4 h-4 sm:w-5 sm:h-5">
-                      <img src={social.icon} alt={social.name} className="w-full h-full opacity-60 group-hover:opacity-0 transition-opacity duration-300" />
-                      <img src={social.icon} alt={social.name} className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ filter: 'brightness(0) saturate(100%) invert(55%) sepia(75%) saturate(3021%) hue-rotate(248deg) brightness(93%) contrast(91%)' }} />
-                    </div>
-                  </a>
-                ))}
-              </div>
-
-              <div className="hidden min-[550px]:block">
-                <PoweredByExplNodes size="sm" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      <motion.button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-16 sm:bottom-20 right-3 sm:right-6 md:right-8 w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 flex items-center justify-center transition-all duration-300 z-50 border border-primary/50"
-        initial={{ opacity: 0, scale: 0, y: 100 }}
-        animate={{ opacity: showScrollTop ? 1 : 0, scale: showScrollTop ? 1 : 0, y: showScrollTop ? 0 : 100 }}
-        whileHover={{ scale: 1.1, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        aria-label="Scroll to top"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="18 15 12 9 6 15" />
-        </svg>
-      </motion.button>
-    </>
-  )
-}
-
 export default function App() {
   return (
+    <OneIdProvider apiUrl={getOneIdApiUrl()} walletConnectId="1fe344d4623291d85ad7369cbc6d9ec8">
     <div className="relative min-h-screen pb-14 sm:pb-16">
-      <Header />
+      <EcosystemNavbar
+        logo="/logo.png"
+        projectName="chain"
+        themeColor="oklch(0.55 0.23 264)"
+        navigationLinks={navigationLinks}
+        currentDomain="chain.expl.one"
+      />
       <main>
         <HeroSection />
         <NetworkSection />
@@ -773,7 +593,8 @@ export default function App() {
         <ConsensusSection />
         <RoadmapSection />
       </main>
-      <Footer />
+      <EcosystemFooter themeColor="oklch(0.55 0.23 264)" />
     </div>
+    </OneIdProvider>
   )
 }
