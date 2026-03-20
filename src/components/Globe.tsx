@@ -148,7 +148,25 @@ export function Globe() {
     }
   }, [])
 
-  if (!webglSupported) return null
+  if (!webglSupported) {
+    return (
+      <div className="relative w-full aspect-square max-w-[600px] mx-auto">
+        <div
+          className="absolute inset-[-10%] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, oklch(0.45 0.12 220 / 0.15) 0%, transparent 70%)',
+          }}
+        />
+        <div
+          className="absolute inset-[10%] rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 35% 35%, oklch(0.25 0.08 220) 0%, oklch(0.15 0.06 240) 40%, oklch(0.08 0.03 260) 100%)',
+            boxShadow: 'inset 0 0 60px oklch(0.30 0.10 220 / 0.3), 0 0 80px oklch(0.35 0.12 220 / 0.15)',
+          }}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="relative w-full aspect-square max-w-[600px] mx-auto">
