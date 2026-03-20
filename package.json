@@ -17,7 +17,7 @@
     "framer-motion": "^12.6.2",
     "cobe": "^0.6.3",
     "@phosphor-icons/react": "^2.1.7",
-    "@explorills/one-ecosystem-ui": "^0.2.0",
+    "@explorills/one-ecosystem-ui": "^0.6.0",
     "wagmi": "^3.5.0",
     "viem": "^2",
     "@tanstack/react-query": "^5.0.0"
