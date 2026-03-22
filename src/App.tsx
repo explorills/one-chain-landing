@@ -576,7 +576,7 @@ function RoadmapSection() {
 
 export default function App() {
   return (
-    <OneIdProvider apiUrl={getOneIdApiUrl()} walletConnectId="1fe344d4623291d85ad7369cbc6d9ec8">
+    <OneIdProvider apiUrl={getOneIdApiUrl()} projectId="1fe344d4623291d85ad7369cbc6d9ec8">
     <div className="relative min-h-screen pb-14 sm:pb-16">
       <EcosystemNavbar
         logo="/logo.png"
