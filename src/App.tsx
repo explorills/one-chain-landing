@@ -22,7 +22,7 @@ import { AnimatedCounter } from './components/AnimatedCounter'
 import { DataStream } from './components/DataStream'
 import { BlockTicker } from './components/BlockTicker'
 import { LiveIndicator } from './components/LiveIndicator'
-import { fetchStats, getOneIdApiUrl, type NetworkStats } from './lib/api'
+import { fetchStats, type NetworkStats } from './lib/api'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -576,7 +576,7 @@ function RoadmapSection() {
 
 export default function App() {
   return (
-    <OneIdProvider apiUrl={getOneIdApiUrl()} projectId="1fe344d4623291d85ad7369cbc6d9ec8">
+    <OneIdProvider projectId="1fe344d4623291d85ad7369cbc6d9ec8">
     <div className="relative min-h-screen pb-14 sm:pb-16">
       <EcosystemNavbar
         logo="/logo.png"
